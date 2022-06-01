@@ -1,1 +1,2 @@
-TestContract:testBar() (gas: 401)
+TestContract:testBar() (gas: 314)
+TestContract:testSetUp() (gas: 7310)
