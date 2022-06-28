@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Unlicense
-pragma solidity >=0.8.0;
+pragma solidity >=0.6.0;
+pragma experimental ABIEncoderV2;
 
 import {DSTest} from "ds-test/test.sol";
 import {Vm} from "forge-std/Vm.sol";
@@ -8,7 +9,7 @@ import {Vm} from "forge-std/Vm.sol";
 // original: https://github.com/FrankieIsLost/forge-template/blob/master/src/test/utils/Utilities.sol
 // I've extended with some method overloads
 contract Utilities is DSTest {
-    Vm internal immutable vm = Vm(HEVM_ADDRESS);
+    Vm internal vm = Vm(HEVM_ADDRESS);
     bytes32 internal nextUser = keccak256(abi.encodePacked("user address"));
 
     function getNextUserAddress() external returns (address payable) {

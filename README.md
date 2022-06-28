@@ -1,59 +1,95 @@
-# <h1 align="center"> Forge Template </h1>
+# Ethernaut CTF - Foundry edition
 
-**Template repository for getting started quickly with Foundry projects**
+## What is Ethernaut by OpenZeppelin
 
-![Github Actions](https://github.com/StErMi/forge-template/workflows/CI/badge.svg)
+[Ethernaut](https://github.com/OpenZeppelin/ethernaut) is a Web3/Solidity based war game inspired in [overthewire.org](https://overthewire.org/), to be played in the Ethereum Virtual Machine. Each level is a smart contract that needs to be 'hacked'.
 
-## Recognitions
+The game acts both as a tool for those interested in learning Ethereum, and as a way to catalog historical hacks in levels. Levels can be infinite, and the game does not require to be played in any particular order.
 
-- Base [forge-template](https://github.com/foundry-rs/forge-template) from Foundry team
-- `Utilities.sol` from [FrankieIsLost forge-template](https://github.com/FrankieIsLost/forge-template)
+Created by [OpenZeppelin](https://www.openzeppelin.com/)
+Visit [https://ethernaut.openzeppelin.com/](https://ethernaut.openzeppelin.com/)
 
-## What is different from base tamplate?
+## Acknowledgements
 
-- Added FrankieIsLost `Utilities.sol`
-- Extended FrankieIsLost `Utilities.sol` to create tests users and setup them via `Utilities.createUsers`
-- Auto labeling created test users
-- Created `BaseTest.sol` contract
-- preconfigured `solhint` and `prettier`
+- Created by [OpenZeppelin](https://www.openzeppelin.com/)
+- [Ethernaut Website](https://ethernaut.openzeppelin.com/)
+- [Ethernaut GitHub](https://github.com/OpenZeppelin/ethernaut)
+- [Foundry](https://github.com/gakonst/foundry)
+- [Foundry Book](https://book.getfoundry.sh/)
 
-## Getting Started
+Thanks to everyone who had helped me during the making of this project!
 
-Click "Use this template" on [GitHub](https://github.com/StErMi/forge-template) to create a new repository with this repo as the initial state.
+## Warnings - some solutions are missing!
 
-Or, if your repo already exists, run:
+Ethernaut sometimes rely on old version of solidity to showcase bugs/exploits. Some of those challenges were throwing compilation errors because of solidity compiler incompatibility.
 
-```sh
-forge init
-forge build
-forge test
+These challenges are not part of the repository:
+
+- [Alien Codex](https://ethernaut.openzeppelin.com/level/0xda5b3Fb76C78b6EdEE6BE8F11a1c31EcfB02b272)
+- [Motorbike](https://ethernaut.openzeppelin.com/level/0x58Ab506795EC0D3bFAE4448122afa4cDE51cfdd2)
+
+## How to play
+
+### Install Foundry
+
+```bash
+curl -L https://foundry.paradigm.xyz | bash
 ```
 
-## Writing your first test
+### Update Foundry
 
-All you need is to `import "./utils/BaseTest.sol";` that will inherit from and then inherit it from your test contract. Forge-std's Test contract comes with a pre-instatiated [cheatcodes environment](https://book.getfoundry.sh/cheatcodes/), the `vm`. It also has support for [ds-test](https://book.getfoundry.sh/reference/ds-test.html)-style logs and assertions. Finally, it supports Hardhat's [console.log](https://github.com/brockelmore/forge-std/blob/master/src/console.sol). The logging functionalities require `-vvvv`.
+```bash
+foundryup
+```
+
+### Clone repo and install dependencies
+
+```bash
+git clone git@github.com:StErMi/forge-ethernaut.git
+cd forge-ethernaut
+git submodule update --init --recursive
+```
+
+### Run a solution
+
+```bash
+# example forge test --match-contract TestCoinFlip
+forge test --match-contract NAME_OF_THE_TEST
+```
+
+### Create your own solutions
+
+Create a new test `CHALLENGE.t.sol` in the `test/` directory and inherit from `BaseTest.sol`.
+
+**BaseTest.sol** will automate all these things:
+
+1. The constructor will set up some basic parameters like the number of users to create, how many ethers give them (5 ether) as initial balance and the labels for each user (for better debugging with forge)
+2. Set up the `Ethernaut` contract
+3. Register the level that you have specified in your `CHALLENGE.t.sol` constructor
+4. Run the test automatically calling two callbacks inside your `CHALLENGE.t.sol` contract
+   - `setupLevel` is the function you must override and implement all the logic needed to set up the challenge. Usually is always the same (call `createLevelInstance` and initialize the `level` variable)
+   - `exploitLevel` is the function you must override and implement all the logic to solve the challenge
+5. Run automatically the `checkSuccess` function that will check if the solution you have provided has solved the challenge
+
+Here's an example of a test
 
 ```solidity
 // SPDX-License-Identifier: Unlicense
-pragma solidity ^0.8.13;
+pragma solidity >=0.6.0;
+pragma experimental ABIEncoderV2;
 
 import './utils/BaseTest.sol';
+import 'src/levels/CHALLENGE.sol';
+import 'src/levels/CHALLENGEFactory.sol';
 
-contract TestContract is BaseTest {
-  constructor() {
-    // Created (during `setUp()`) users will be available in `users` state variable
+import '@openzeppelin/contracts/math/SafeMath.sol';
 
-    // Setup test to create 2 test user with 100 ether in balance each
-    // preSetUp(2);
+contract TestCHALLENGE is BaseTest {
+  CoinFlip private level;
 
-    // Setup test to create 2 test user with 1 ether in balance each
-    // preSetUp(2, 1 ether);
-
-    // Setup test to create 2 test user with 1 ether in balance each and label them accordingly
-    string[] memory userLabels = new string[](2);
-    userLabels[0] = 'Alice';
-    userLabels[1] = 'Bob';
-    preSetUp(2, 100 ether, userLabels);
+  constructor() public {
+    // SETUP LEVEL FACTORY
+    levelFactory = new CHALLENGEFactory();
   }
 
   function setUp() public override {
@@ -61,23 +97,41 @@ contract TestContract is BaseTest {
     super.setUp();
   }
 
-  function testSetUp() public {
-    assertEq(users.length, 2);
-    assertEq(users[0].balance, 100 ether);
+  function testRunLevel() public {
+    runLevel();
   }
 
-  function testBar() public {
-    assertEq(uint256(1), uint256(1), 'ok');
+  function setupLevel() internal override {
+    /** CODE YOUR SETUP HERE */
+
+    levelAddress = payable(this.createLevelInstance(true));
+    level = CHALLENGE(levelAddress);
   }
 
-  function testFoo(uint256 x) public {
-    vm.assume(x < type(uint128).max);
-    assertEq(x + x, x * 2);
+  function exploitLevel() internal override {
+    /** CODE YOUR EXPLOIT HERE */
+
+    vm.startPrank(player);
+
+    // SOLVE THE CHALLENGE!
+
+    vm.stopPrank();
   }
 }
 
 ```
 
-## Development
+What you need to do is to
 
-This project uses [Foundry](https://getfoundry.sh). See the [book](https://book.getfoundry.sh/getting-started/installation.html) for instructions on how to install and use Foundry.
+1. Replace `CHALLENGE` with the name of the Ethernaut challenge you are solving
+2. Modify `setupLevel` if needed
+3. Implement the logic to solve the challenge inside `setupLevel` between `startPrank` and `stopPrank`
+4. Run the test!
+
+## Disclaimer
+
+All Solidity code, practices and patterns in this repository are DAMN VULNERABLE and for educational purposes only.
+
+I **do not give any warranties** and **will not be liable for any loss** incurred through any use of this codebase.
+
+**DO NOT USE IN PRODUCTION**.

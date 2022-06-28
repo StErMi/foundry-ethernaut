@@ -1,2 +1,5 @@
+[default]
+optimizer_runs = 200
+
 [ci]
 fuzz-runs = 10_000
