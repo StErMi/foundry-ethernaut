@@ -45,8 +45,8 @@ foundryup
 ### Clone repo and install dependencies
 
 ```bash
-git clone git@github.com:StErMi/forge-ethernaut.git
-cd forge-ethernaut
+git clone git@github.com:StErMi/foundry-ethernaut.git
+cd foundry-ethernaut
 git submodule update --init --recursive
 ```
 
