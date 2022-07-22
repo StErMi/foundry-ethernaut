@@ -20,8 +20,6 @@ contract TestGatekeeperOne is BaseTest {
         super.setUp();
     }
 
-    uint256 gas;
-
     function testRunLevel() public {
         runLevel();
     }
@@ -94,7 +92,7 @@ contract TestGatekeeperOne is BaseTest {
         Exploiter exploiter = new Exploiter(level);
 
         vm.prank(player, player);
-        exploiter.exploit(key, gas);
+        exploiter.exploit(key);
 
         // Check we have solved the challenge
         assertEq(level.entrant(), player);
@@ -110,7 +108,7 @@ contract Exploiter is Test {
         owner = msg.sender;
     }
 
-    function exploit(bytes8 gateKey, uint256 gas) external {
+    function exploit(bytes8 gateKey) external {
         victim.enter{gas: 802929}(gateKey);
     }
 }
