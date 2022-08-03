@@ -69,12 +69,15 @@ contract TestRecovery is BaseTest {
             uint160(uint256(keccak256(abi.encodePacked(bytes1(0xd6), bytes1(0x94), address(level), bytes1(0x01)))))
         );
 
-        assertEq(lostContract.balance, 0.001 ether);
+        uint256 contractBalanceBefore = lostContract.balance;
+        assertEq(contractBalanceBefore, 0.001 ether);
 
+        uint256 playerBalanceBefore = player.balance;
         SimpleToken(lostContract).destroy(player);
 
         vm.stopPrank();
 
         assertEq(lostContract.balance, 0);
+        assertEq(player.balance, playerBalanceBefore + contractBalanceBefore);
     }
 }
