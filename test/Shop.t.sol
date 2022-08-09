@@ -76,7 +76,6 @@ contract TestShop is BaseTest {
 }
 
 contract Exploiter {
-    bool private firstCallDone;
     Shop private victim;
 
     function buy(Shop _victim) external {
