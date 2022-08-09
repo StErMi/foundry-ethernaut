@@ -49,7 +49,7 @@ contract TestShop is BaseTest {
         // - Emit events.
         // - Create other contracts.
         // - Use selfdestruct.
-        // - Sebd Ether via calls.
+        // - Send Ether via calls.
         // - Call any function not marked view or pure.
         // - Use low-level calls.
         // - Use inline assembly that contains certain opcodes.
