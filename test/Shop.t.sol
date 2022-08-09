@@ -66,9 +66,10 @@ contract TestShop is BaseTest {
         // deploy the exploiter contract
         Exploiter exploiter = new Exploiter();
 
-        // set the exploiter as the partner
+        // trigger the exploit and buy the item
         exploiter.buy(level);
 
+        // assert that we have solved the challenge
         assertEq(level.isSold(), true);
 
         vm.stopPrank();
