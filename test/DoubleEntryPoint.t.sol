@@ -54,7 +54,7 @@ contract TestDoubleEntryPoint is BaseTest {
         // When you will sweep LegacyToken tokens they will transfer DoubleEntryPoint tokens because of `delegateTransfer`
         // So we need to prevent anyone to also sweep `LegacyToken` tokens
 
-        // To do so we create a `DetenctionBot` will implement the `handleTransaction`
+        // To do so we create a `DetectionBot` will implement the `handleTransaction`
         // `handleTransaction` has 2 parameters:
         // - `address user`
         // - `bytes msgData` that is the calldata payload
@@ -66,7 +66,7 @@ contract TestDoubleEntryPoint is BaseTest {
         // Is that when the Legacy token is transferred via `delegateTransfer` the balance of the owner remain the same
         // The `LegacyToken` should be burned prior collaing `delegateTransfer`
 
-        DetenctionBot bot = new DetenctionBot(
+        DetectionBot bot = new DetectionBot(
             level.cryptoVault(),
             abi.encodeWithSignature("delegateTransfer(address,uint256,address)")
         );
@@ -76,7 +76,7 @@ contract TestDoubleEntryPoint is BaseTest {
     }
 }
 
-contract DetenctionBot is IDetectionBot {
+contract DetectionBot is IDetectionBot {
     address private monitoredSource;
     bytes private monitoredSig;
 
