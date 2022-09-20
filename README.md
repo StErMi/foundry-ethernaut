@@ -125,7 +125,7 @@ What you need to do is to
 
 1. Replace `CHALLENGE` with the name of the Ethernaut challenge you are solving
 2. Modify `setupLevel` if needed
-3. Implement the logic to solve the challenge inside `setupLevel` between `startPrank` and `stopPrank`
+3. Implement the logic to solve the challenge inside `exploitLevel()` between `startPrank` and `stopPrank`
 4. Run the test!
 
 ## Disclaimer
